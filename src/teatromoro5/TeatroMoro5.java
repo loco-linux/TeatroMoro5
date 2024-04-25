@@ -1,0 +1,681 @@
+
+package teatromoro5;
+
+import java.util.*;
+
+
+
+public class TeatroMoro5 {
+
+    // Variables estáticas
+    // defino colores para optimizar visualizacion de texto del programa   
+    public static String rojo       ="\033[31m"; 
+    public static String verde      ="\033[32m"; 
+    public static String azul       ="\033[34m"; 
+    public static String celeste    ="\033[36m"; 
+    public static String reset      ="\u001B[0m";   
+    
+    public static String nombreTeatro = "TEATRO MORO";  
+    public static String ID="";
+    
+    public static double totalIngresos = 0;
+    public static boolean unAdulto = false;
+    public static int totalVendidas = 0;
+    
+    public static boolean llenoZonaA = false;
+    public static boolean llenoZonaB = false;
+    public static boolean llenoZonaC = false;
+    public static boolean llenoZonaD = false;
+    
+    // Abstraccion de representacion de datos
+     // Declaro una matriz unidimensional para las zonas de entradas
+     public static String[] tipoEntrada = {"A", "B", "C", "D"};
+     // Declaro matriz unidimensional para cuantificar entradas por sector
+     public static int[] contadorEntrada = {0,0,0,0};
+     
+ 
+    public static String[] entradasCompradas = {"","","","","","","","","","","","","","",""};
+    public static int indicadorEnt = 0; 
+     // declaro matriz 4x5
+     public static int[][] ubicacionAsiento = {
+         {0,0,0,0,0}, // [0,0][0,1][0,2][0,3][0,4]
+         {0,0,0,0,0}, // [1,0][1,1][1,2][1,3][1,4]
+         {0,0,0,0,0}, // [2,0][2,1][2,2][2,3][2,4]
+         {0,0,0,0,0}, // [3,0][3,1][3,2][3,3][3,4]
+     };
+    
+    // Crea una nueva ArrayList para almacenar cadenas
+    static List<String>     clienteDetalle      =new ArrayList<>();
+    static List<String>     IDcliente           =new ArrayList<>();
+    static List<String>     ubicacion           =new ArrayList<>();
+    static List<Integer>    costoUnitario       =new ArrayList<>();
+    static List<Double>     descuentoAplicado   =new ArrayList<>();
+    static List<Double>     costoFinal          =new ArrayList<>();
+    
+
+    public static void main(String[] args) {
+     // metodo que imprime una bienvenida en pantalla
+        bienvenida(); 
+        
+        detalleCliente();
+        
+        // Variables de input de usuario desde teclado
+        Scanner teclado = new Scanner(System.in);
+        
+        // Definicion de variables locales
+        boolean encontrado = false, continua = false; 
+        int opcion;
+             
+        while(encontrado==false){
+        
+        
+        do{ 
+        try{
+            continua = false;
+            System.out.println(celeste+"[MENU]"+reset);
+            System.out.println("Presiona 1 si quieres "+verde+"[Cambio Cliente]"+reset);
+            System.out.println("Presiona 2 si quieres "+verde+"[Plano Teatro]"+reset);
+            System.out.println("Presiona 3 si quieres "+verde+"[Comprar Entrada]"+reset);
+            System.out.println("Presiona 4 si quieres "+verde+"[Boleta]"+reset);
+            System.out.println("Presiona 5 si quieres "+verde+"[Ingresos totales]"+reset);
+            System.out.println("Presiona 6 si quieres "+verde+"[Eliminar Entrada]"+reset);
+            System.out.println("Presiona 7 si quieres "+verde+"[Modificar Entrada]"+reset);
+            System.out.println("Presiona 8 si quieres "+verde+"[Salir]"+reset);
+            System.out.print("--->Ingrese opcion: ");
+        
+        opcion = teclado.nextInt();
+ 
+        switch(opcion){
+            case 1 -> detalleCliente();
+            case 2 -> planoTeatro();
+            case 3 -> {
+                // Ingreso un numero aleatorio para la ID
+                int random = (int)Math.floor(Math.random()*1000+1);
+                IDcliente.add(ID+random);
+                comprarEntrada();
+                }
+            case 4 -> generadorBoleta();
+            case 5 -> ingresosTotales();
+            case 6 -> eliminarEntrada();
+            case 7 -> modificarEntrada();
+            case 8 -> {
+                encontrado = true; // para salir del bucle while
+                System.out.println(celeste+"Gracias por su compra!"+reset);
+                System.out.println("");
+                }
+            // control de errores
+            default -> System.out.println(rojo+"[ERROR] Ingrese una opcion valida!"+reset); 
+        } // fin switch
+         
+        // control de errores por error de ingreso de datos por parte del usuario
+                } catch(InputMismatchException ex){
+           System.out.println(rojo+"[ERROR] Ingrese un numero entero"+reset);
+           teclado.next();
+           continua = true;
+         }
+        }while(continua);
+     }
+  
+      teclado.close();
+        
+    }
+    
+        
+    public static void generadorBoleta(){
+        
+        if (ubicacion.isEmpty()){
+            System.out.println(rojo+"[ERROR] Aun no se han comprado entradas!"+reset);
+        }else{
+        
+        for(int i=0; i < ubicacion.size(); i++){
+        
+        System.out.println("""
+                           -----------------------------------------
+                           ************   TEATRO MORO   ************
+                           -----------------------------------------""");
+        System.out.println(">>>ID venta: " + IDcliente.get(i));
+        System.out.println("*Ubicacion: " + ubicacion.get(i) );
+        System.out.println("*Costo Base: $" + costoUnitario.get(i) );
+        
+        boolean dcto10 = descuentoAplicado.get(i) == 0.1;
+        boolean dcto15 = descuentoAplicado.get(i) == 0.15;
+        
+        if(dcto10){
+                System.out.println("*Descuento Aplicado: 10%");
+            } else if(dcto15){
+                System.out.println("*Descuento Aplicado: 15%");
+            } else {
+                System.out.println("*Descuento Aplicado: 0%");
+            }
+        
+        System.out.println("*Costo Final: $" + costoFinal.get(i) );
+        
+        System.out.println("""
+                           -----------------------------------------
+                             Gracias por su visita al Teatro Moro
+                           -----------------------------------------
+                           
+                           
+                           """);
+        }
+        }  
+    }
+    
+    
+    public static void bienvenida(){
+        
+    // Despliegue menu principal
+        System.out.println(rojo+"*******************************");
+        System.out.println(rojo+"********* "+nombreTeatro+" *********");              
+        System.out.println(rojo+"*******************************"); 
+        System.out.println(rojo+"------ TICKETERA VIRTUAL ------"+reset); 
+        System.out.println("");
+               
+    }
+    
+    
+    
+    public static void detalleCliente(){
+        
+        Scanner datos = new Scanner(System.in);
+        String nombre, apellido, nombreCompleto, inicialN, inicialA;
+       
+        System.out.print("Ingrese su nombre: ");
+        nombre = datos.nextLine();
+        System.out.print("Ingrese su apellido: ");
+        apellido = datos.nextLine();
+        
+        nombreCompleto = nombre.toUpperCase() + " " + apellido.toUpperCase();
+        clienteDetalle.add(nombreCompleto);
+        
+        inicialN = nombre.toUpperCase().substring(0,1);
+        inicialA = apellido.toUpperCase().substring(0,1);
+        
+        ID = inicialN + inicialA;
+        int client = clienteDetalle.size();
+        
+        System.out.println(">>Su nombre es " + clienteDetalle.get(client-1));
+        System.out.println(">>Su ID de venta es: " + ID);
+        
+        
+        
+    }
+    
+    
+    public static void eliminarEntrada(){
+        
+        Scanner datos = new Scanner(System.in);
+        String buscar;
+        boolean encontrado = false;
+        int contador = 0;
+        
+        if(IDcliente.isEmpty()){
+            System.out.println(rojo+"[ERROR] Aun no se compran entradas..."+reset);
+        }else{
+        System.out.print("Ingrese ID venta: ");
+        buscar = datos.nextLine();
+     
+       for(int i=0; i<IDcliente.size(); i++){
+           if(IDcliente.get(i).equals(buscar)){
+               IDcliente.remove(contador);
+                eliminarAsiento(contador);
+                ubicacion.remove(contador);
+                costoUnitario.remove(contador);
+                descuentoAplicado.remove(contador);
+                costoFinal.remove(contador);
+                totalVendidas--;
+                System.out.println(buscar+rojo+"-->[REMOVIDO]"+reset);
+                encontrado = true;
+                break;
+           }
+           contador++;
+       } 
+       
+       if(encontrado == false){
+           System.out.println(azul+"ID venta no encontrado!"+reset);
+       }   
+    }
+    }
+    
+    
+    public static void modificarEntrada(){
+
+        Scanner datos = new Scanner(System.in);
+        String buscar;
+        boolean encontrado = false;
+        int contador = 0, indice = IDcliente.size();
+        
+        if(IDcliente.isEmpty()){
+            System.out.println(rojo+"[ERROR] Aun no se compran entradas..."+reset);
+        }else{
+        System.out.print("Ingrese ID venta: ");
+        buscar = datos.nextLine();
+        
+        // funcion para comprar entrada
+        
+        for(int i=0; i<indice ; i++){
+            if(IDcliente.get(i).equals(buscar)){
+                encontrado = true;
+                break;
+            }
+            contador++;
+        } // fin for, ya con el contador asignado
+        
+        if(encontrado=true){
+            
+            eliminarAsiento(contador);
+            totalVendidas--;
+            
+            
+            
+        // Variables de input de usuario desde teclado
+        Scanner teclado2 = new Scanner(System.in);
+     
+         // Variables locales
+        String opcionZona;
+        int edad, opcionColumna;
+        boolean encontra2 = false, bucleEdad = false;  
+     
+      do{
+        
+        System.out.print("Ingresa la Zona deseada "+verde+"(A, B, C, D)"+reset+": ");          
+        opcionZona = teclado2.nextLine().toUpperCase();
+              
+         switch (opcionZona) {
+             case "A" -> {
+                 if(llenoZonaA == false){
+                 ubicacion.set(contador,"A");
+                 costoUnitario.set(contador,30000);
+                 encontra2 = true; 
+                 Entrada.entradaA++;  
+                 totalVendidas++;
+                  }else{
+                     System.out.println(rojo+"[ERROR] Sin cupos, ingrese una ubicacion en otra Zona."+reset);
+                    }
+                }
+             case "B" -> {   
+                 if(llenoZonaB == false){
+                 ubicacion.set(contador,"B");
+                 costoUnitario.set(contador,20000);
+                 encontra2 = true;
+                 Entrada.entradaB++;
+                 totalVendidas++;
+                 }else{
+                     System.out.println(rojo+"[ERROR] Sin cupos, ingrese una ubicacion en otra Zona."+reset);
+                    }
+                }  
+             case "C" -> {  
+                 if(llenoZonaC == false){
+                 ubicacion.set(contador,"C");
+                 costoUnitario.set(contador,15000);
+                 encontra2 = true;
+                 Entrada.entradaC++;
+                 totalVendidas++;
+                 }else{
+                     System.out.println(rojo+"[ERROR] Sin cupos, ingrese una ubicacion en otra Zona."+reset);
+                    }
+                 }
+             case "D" -> {  
+                 if(llenoZonaD == false){
+                 ubicacion.set(contador,"D");
+                 costoUnitario.set(contador,10000);
+                 encontra2 = true;
+                 Entrada.entradaD++;
+                 totalVendidas++;
+                }else{
+                     System.out.println(rojo+"[ERROR] Sin cupos, ingrese una ubicacion en otra Zona."+reset);
+                    }
+             }
+             default -> System.out.println(rojo+"[ERROR] Entrada no valida. Reintente..."+reset);
+             } // fin switch
+        }while(encontra2 == false);
+        
+      
+     do{
+         encontra2=false;
+         do{
+         System.out.print("Ingrese la Columna deseada " +verde+"(1-5): "+reset);
+         opcionColumna = teclado2.nextInt();
+         }while(opcionColumna<1 || opcionColumna>5);
+         
+         // Asignacion de Asiento
+         encontra2 = asignarAsiento(opcionZona, opcionColumna);
+
+     }while(encontra2 == false);
+  
+      teclado2.reset();
+      
+      // Descuentos por Estudiante / Adulto Mayor
+     while(bucleEdad == false){
+
+     do{
+        System.out.print("Presione "+rojo+"1"+reset+" si es [E]studiante o "+rojo+"2"+reset+" si es [T]ercera edad\nde lo contrario, presione "+rojo+"3"+reset+":  ");
+        edad = teclado2.nextInt();
+        if(edad<1 || edad >3) System.out.println(rojo+"[ERROR] Ingrese lo solicitado..."+reset);  
+        }while(edad<1 || edad >3);
+
+        // Aplica descuentos
+        switch(edad){
+            case 1 -> {
+                descuentoAplicado.set(contador, 0.10);
+                bucleEdad = true;
+                break;
+                    } 
+            case 2 -> {
+                descuentoAplicado.set(contador, 0.15);
+                bucleEdad = true;
+                break;
+                    }
+            default -> {
+                descuentoAplicado.set(contador, 0.0);
+                bucleEdad = true;
+                break;
+                    }           
+            }// fin switch
+     }
+
+     
+
+     
+        // Calculo para definir el costo final, y lo agrega a la Lista definida para ello
+        int costo = costoUnitario.get(contador);
+        double dcto = descuentoAplicado.get(contador);
+        double costoF = costo - (costo * dcto);
+        costoFinal.set(contador,costoF);
+            
+        System.out.println(IDcliente.get(contador)+rojo+"-->[MODIFICADO]"+reset);
+            
+        }else{
+            System.out.println(rojo+"[ERROR] No se encontró ID..."+reset);
+        }
+
+        }// fin else 
+        
+    }
+    
+    
+    public static boolean asignarAsiento(String fila, int columna){
+        
+                  // Usa el asiento y lo registra en el array
+         for(int i = 0; i<4; i++){
+            for (int j=0; j<5; j++){
+                if(
+                        tipoEntrada[i].equals(fila) && 
+                        ubicacionAsiento[i][columna-1]!=1
+                    ){
+                ubicacionAsiento[i][columna-1] = 1;
+                contadorEntrada[i]++;
+                entradasCompradas[indicadorEnt]= fila + columna;
+                indicadorEnt++;
+                System.out.println("Su ubicacion escogida: " + rojo + fila + columna + reset);
+                ubicacion.set(ubicacion.size()-1, fila + columna);
+                
+                if(contadorEntrada[i]==5){
+                    switch(fila){
+                        case "A" -> llenoZonaA = true;
+                        case "B" -> llenoZonaB = true;
+                        case "C" -> llenoZonaC = true;
+                        case "D" -> llenoZonaD = true;
+                    }
+                    
+                } 
+                return true;
+                //break;
+                } // if
+                else if(
+                        tipoEntrada[i].equals(fila) && 
+                        ubicacionAsiento[i][columna-1]==1
+                    ){
+                    System.out.println(rojo+"[ERROR] Ubicacion ocupada. Seleccione otra..."+reset);
+                    break;
+                }
+                
+                } // for2
+                } // for1   
+        
+       return false; 
+    }
+    
+    
+    public static void eliminarAsiento(int indice){
+        
+        String asiento = ubicacion.get(indice);
+        String fila = asiento.substring(0,1);
+        String columna = asiento.substring(1,2);
+        
+        int col = Integer.parseInt(columna);
+         
+        switch(fila){
+            case "A" -> {
+                ubicacionAsiento[0][col-1]=0;
+                Entrada.entradaA--;
+                }
+            case "B" -> {
+            ubicacionAsiento[1][col-1]=0;
+            Entrada.entradaB--;
+                }
+            case "C" -> {
+                ubicacionAsiento[2][col-1]=0;
+                Entrada.entradaC--;
+                }
+            case "D" -> {
+                ubicacionAsiento[3][col-1]=0;
+                Entrada.entradaD--;
+                }
+        }
+        
+        
+        
+    }
+    
+    
+    public static void comprarEntrada(){
+        // Variables de input de usuario desde teclado
+     Scanner teclado2 = new Scanner(System.in);
+     
+     // Variables locales
+     String opcionZona;
+     int edad;
+     boolean encontra2 = false, bucleEdad = false;
+     int opcionColumna;
+    
+     
+      do{
+        
+        System.out.print("Ingresa la Zona deseada "+verde+"(A, B, C, D)"+reset+": ");          
+        opcionZona = teclado2.nextLine().toUpperCase();
+              
+         switch (opcionZona) {
+             case "A" -> {
+                 if(llenoZonaA == false){
+                 ubicacion.add("A");
+                 costoUnitario.add(30000);
+                 encontra2 = true; 
+                 Entrada.entradaA++;  
+                 totalVendidas++;
+                  }else{
+                     System.out.println(rojo+"[ERROR] Sin cupos, ingrese una ubicacion en otra Zona."+reset);
+                    }
+                }
+             case "B" -> {   
+                 if(llenoZonaB == false){
+                 ubicacion.add("B");
+                 costoUnitario.add(20000);
+                 encontra2 = true;
+                 Entrada.entradaB++;
+                 totalVendidas++;
+                 }else{
+                     System.out.println(rojo+"[ERROR] Sin cupos, ingrese una ubicacion en otra Zona."+reset);
+                    }
+                }  
+             case "C" -> {  
+                 if(llenoZonaC == false){
+                 ubicacion.add("C");
+                 costoUnitario.add(15000);
+                 encontra2 = true;
+                 Entrada.entradaC++;
+                 totalVendidas++;
+                 }else{
+                     System.out.println(rojo+"[ERROR] Sin cupos, ingrese una ubicacion en otra Zona."+reset);
+                    }
+                 }
+             case "D" -> {  
+                 if(llenoZonaD == false){
+                 ubicacion.add("D");
+                 costoUnitario.add(10000);
+                 encontra2 = true;
+                 Entrada.entradaD++;
+                 totalVendidas++;
+                }else{
+                     System.out.println(rojo+"[ERROR] Sin cupos, ingrese una ubicacion en otra Zona."+reset);
+                    }
+             }
+             default -> System.out.println(rojo+"[ERROR] Entrada no valida. Reintente..."+reset);
+             } // fin switch
+        }while(encontra2 == false);
+        
+      
+     do{
+         encontra2=false;
+         do{
+         System.out.print("Ingrese la Columna deseada " +verde+"(1-5): "+reset);
+         opcionColumna = teclado2.nextInt();
+         }while(opcionColumna<1 || opcionColumna>5);
+         
+         // Asignacion de Asiento
+         encontra2 = asignarAsiento(opcionZona, opcionColumna);
+
+     }while(encontra2 == false);
+  
+      teclado2.reset();
+      
+      // Descuentos por Estudiante / Adulto Mayor
+     while(bucleEdad == false){
+
+     do{
+        System.out.print("Presione "+rojo+"1"+reset+" si es [E]studiante o "+rojo+"2"+reset+" si es [T]ercera edad\nde lo contrario, presione "+rojo+"3"+reset+":  ");
+        edad = teclado2.nextInt();
+        if(edad<1 || edad >3) System.out.println(rojo+"[ERROR] Ingrese lo solicitado..."+reset);  
+        }while(edad<1 || edad >3);
+
+        // Aplica descuentos
+        switch(edad){
+            case 1 -> {
+                descuentoAplicado.add(0.10);
+                bucleEdad = true;
+                break;
+                    } 
+            case 2 -> {
+                descuentoAplicado.add(0.15);
+                bucleEdad = true;
+                break;
+                    }
+            default -> {
+                descuentoAplicado.add(0.0);
+                bucleEdad = true;
+                break;
+                    }           
+            }// fin switch
+     }
+     
+     // Calculo para definir el costo final, y lo agrega a la Lista definida para ello
+     int indice = ubicacion.size();
+     int costo = costoUnitario.get(indice-1);
+     double dcto = descuentoAplicado.get(indice-1);
+     double costoF = costo - (costo * dcto);
+     costoFinal.add(costoF);
+     
+        System.out.println(">ID venta: " + IDcliente.get(indice-1));
+    }
+    
+    
+    public static void ingresosTotales(){
+        
+        Entrada.entradasVendidas();
+        
+        double costo = 0.0;
+        // Si la lista no esta vacia, usa un FOR para sumar el ingreso total
+        if(!ubicacion.isEmpty()){
+        for(int i=0; i < ubicacion.size(); i++){
+            costo += costoFinal.get(i);
+        }
+        System.out.println(rojo + ">> Ingresos Totales acumulados: " + azul + costo + reset);
+        }
+    }
+    
+    
+    
+    public static void planoTeatro(){
+         
+        System.out.println("\n"+celeste+"**** PLANO DEL TEATRO ****"+reset);
+        for(int i = 0; i<4; i++){
+            System.out.print("Zona " + tipoEntrada[i] + " ");
+            for (int j=0; j<5; j++){
+                System.out.print("[");
+                if(ubicacionAsiento[i][j]==1){
+                    System.out.print(rojo+ubicacionAsiento[i][j]+reset);
+                }else{
+                    System.out.print(ubicacionAsiento[i][j]);
+                }
+                System.out.print("]");
+            }
+            System.out.println("");
+        }
+        int resto = 20 - totalVendidas;
+        System.out.println("");
+        System.out.println(         "[0] Disponible       -> "+resto);
+        System.out.println(rojo+    "[1] No disponible    -> "+totalVendidas+reset);
+        System.out.println();
+         
+         
+     }
+    
+    
+} // Fin clase TeatroMoro5
+
+
+class Entrada {
+    
+    // Variables de instancia (global)
+    static int entradaA = 0;
+    static int entradaB = 0;
+    static int entradaC = 0;
+    static int entradaD = 0;
+    static int cantidadEntradasVendidas = 0;
+     
+    public static void entradasVendidas(){
+        boolean hayEntrada = false;
+        
+        if(entradaA != 0){
+            System.out.println(TeatroMoro5.rojo+"[A]:       " + TeatroMoro5.reset + entradaA);
+            hayEntrada = true;
+        } 
+        
+        if (entradaB != 0){
+            System.out.println(TeatroMoro5.rojo+"[B]:      " + TeatroMoro5.reset + entradaB);
+            hayEntrada = true;
+        } 
+        
+        if (entradaC != 0){
+            System.out.println(TeatroMoro5.rojo+"[C]:      " + TeatroMoro5.reset + entradaC);
+            hayEntrada = true;
+        }
+        
+        if (entradaD != 0){
+            System.out.println(TeatroMoro5.rojo+"[D]:      " + TeatroMoro5.reset + entradaC);
+            hayEntrada = true;
+        }
+        
+        if(hayEntrada == false){
+            System.out.println(TeatroMoro5.rojo+"[ERROR] Aun no compra entradas!"+TeatroMoro5.reset);
+        }
+        
+        cantidadEntradasVendidas = entradaA + entradaB + entradaC + entradaD;
+        
+        if(cantidadEntradasVendidas>0){
+            System.out.println(TeatroMoro5.azul+"[TOTAL]:   " + cantidadEntradasVendidas +TeatroMoro5.reset);
+        }
+        
+    } // Fin metodo entradasVendidas()
+    
+} // Fin clase Entrada
