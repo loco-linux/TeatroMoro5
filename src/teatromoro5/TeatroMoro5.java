@@ -37,6 +37,7 @@ public class TeatroMoro5 {
     public static String[] entradasCompradas = {"","","","","","","","","","","","","","",""};
     public static int indicadorEnt = 0; 
      // declaro matriz 4x5
+    // el numero de asientos es fijo, por lo que un Array es la mejor opcion para representarlos
      public static int[][] ubicacionAsiento = {
          {0,0,0,0,0}, // [0,0][0,1][0,2][0,3][0,4]
          {0,0,0,0,0}, // [1,0][1,1][1,2][1,3][1,4]
@@ -44,7 +45,7 @@ public class TeatroMoro5 {
          {0,0,0,0,0}, // [3,0][3,1][3,2][3,3][3,4]
      };
     
-    // Crea una nueva ArrayList para almacenar cadenas
+    // Crea una nueva Lista tipo ArrayList para almacenar cadenas
     static List<String>     clienteDetalle      =new ArrayList<>();
     static List<String>     IDcliente           =new ArrayList<>();
     static List<String>     ubicacion           =new ArrayList<>();
@@ -126,9 +127,7 @@ public class TeatroMoro5 {
         if (ubicacion.isEmpty()){
             System.out.println(rojo+"[ERROR] Aun no se han comprado entradas!"+reset);
         }else{
-        
-        for(int i=0; i < ubicacion.size(); i++){
-        
+        for(int i=0; i < ubicacion.size(); i++){ 
         System.out.println("""
                            -----------------------------------------
                            ************   TEATRO MORO   ************
@@ -149,7 +148,6 @@ public class TeatroMoro5 {
             }
         
         System.out.println("*Costo Final: $" + costoFinal.get(i) );
-        
         System.out.println("""
                            -----------------------------------------
                              Gracias por su visita al Teatro Moro
@@ -159,12 +157,12 @@ public class TeatroMoro5 {
                            """);
         }
         }  
-    }
+    } // fin metodo generadorBoleta()
     
     
     public static void bienvenida(){
         
-    // Despliegue menu principal
+    // Despliegue Bienvenida al sistema
         System.out.println(rojo+"*******************************");
         System.out.println(rojo+"********* "+nombreTeatro+" *********");              
         System.out.println(rojo+"*******************************"); 
@@ -176,7 +174,7 @@ public class TeatroMoro5 {
     
     
     public static void detalleCliente(){
-        
+        // Metodo que solicita datos del cliente para asignarle un ID a sus compras
         Scanner datos = new Scanner(System.in);
         String nombre, apellido, nombreCompleto, inicialN, inicialA;
        
@@ -196,9 +194,7 @@ public class TeatroMoro5 {
         
         System.out.println(">>Su nombre es " + clienteDetalle.get(client-1));
         System.out.println(">>Su ID de venta es: " + ID);
-        
-        
-        
+ 
     }
     
     
@@ -215,7 +211,7 @@ public class TeatroMoro5 {
         System.out.print("Ingrese ID venta: ");
         buscar = datos.nextLine();
      
-       for(int i=0; i<IDcliente.size(); i++){
+        for(int i=0; i<IDcliente.size(); i++){
            if(IDcliente.get(i).equals(buscar)){
                IDcliente.remove(contador);
                 eliminarAsiento(contador);
@@ -224,18 +220,18 @@ public class TeatroMoro5 {
                 descuentoAplicado.remove(contador);
                 costoFinal.remove(contador);
                 totalVendidas--;
-                System.out.println(buscar+rojo+"-->[REMOVIDO]"+reset);
+                System.out.println(buscar+rojo+"-->[ELIMINADO]"+reset);
                 encontrado = true;
                 break;
            }
            contador++;
-       } 
+        } 
        
-       if(encontrado == false){
-           System.out.println(azul+"ID venta no encontrado!"+reset);
-       }   
-    }
-    }
+        if(encontrado == false){
+           System.out.println(rojo+"[ERROR] ID venta no encontrado!"+reset);
+        }   
+        }
+    } // fin metodo eliminarEntrada()
     
     
     public static void modificarEntrada(){
@@ -259,15 +255,23 @@ public class TeatroMoro5 {
                 break;
             }
             contador++;
-        } // fin for, ya con el contador asignado
+            } // fin for, ya con el contador asignado
         
-        if(encontrado=true){
-            
+        if (encontrado==false){
+            System.out.println(rojo+"[ERROR] No se encontro ID..."+reset);
+        }else{
             eliminarAsiento(contador);
             totalVendidas--;
-            
-            
-            
+            modificar(contador);
+ 
+            System.out.println(IDcliente.get(contador)+rojo+"-->[MODIFICADO]"+reset);
+           }
+      datos.reset();  
+    }
+    } // fin metodo modificarEntrada()
+    
+    
+    public static void modificar(int contador){ 
         // Variables de input de usuario desde teclado
         Scanner teclado2 = new Scanner(System.in);
      
@@ -340,6 +344,9 @@ public class TeatroMoro5 {
          
          // Asignacion de Asiento
          encontra2 = asignarAsiento(opcionZona, opcionColumna);
+         if(encontra2==true){
+             ubicacion.set(contador,opcionZona+opcionColumna);
+         }
 
      }while(encontra2 == false);
   
@@ -374,24 +381,13 @@ public class TeatroMoro5 {
             }// fin switch
      }
 
-     
-
-     
         // Calculo para definir el costo final, y lo agrega a la Lista definida para ello
         int costo = costoUnitario.get(contador);
         double dcto = descuentoAplicado.get(contador);
         double costoF = costo - (costo * dcto);
         costoFinal.set(contador,costoF);
-            
-        System.out.println(IDcliente.get(contador)+rojo+"-->[MODIFICADO]"+reset);
-            
-        }else{
-            System.out.println(rojo+"[ERROR] No se encontró ID..."+reset);
-        }
-
-        }// fin else 
         
-    }
+    } // fin metodo modificar()
     
     
     public static boolean asignarAsiento(String fila, int columna){
@@ -408,7 +404,6 @@ public class TeatroMoro5 {
                 entradasCompradas[indicadorEnt]= fila + columna;
                 indicadorEnt++;
                 System.out.println("Su ubicacion escogida: " + rojo + fila + columna + reset);
-                ubicacion.set(ubicacion.size()-1, fila + columna);
                 
                 if(contadorEntrada[i]==5){
                     switch(fila){
@@ -416,16 +411,13 @@ public class TeatroMoro5 {
                         case "B" -> llenoZonaB = true;
                         case "C" -> llenoZonaC = true;
                         case "D" -> llenoZonaD = true;
-                    }
-                    
-                } 
-                return true;
-                //break;
-                } // if
-                else if(
+                        }  
+                    } 
+                    return true;
+                } else if(
                         tipoEntrada[i].equals(fila) && 
                         ubicacionAsiento[i][columna-1]==1
-                    ){
+                        ){
                     System.out.println(rojo+"[ERROR] Ubicacion ocupada. Seleccione otra..."+reset);
                     break;
                 }
@@ -462,10 +454,7 @@ public class TeatroMoro5 {
                 ubicacionAsiento[3][col-1]=0;
                 Entrada.entradaD--;
                 }
-        }
-        
-        
-        
+        } 
     }
     
     
@@ -545,6 +534,10 @@ public class TeatroMoro5 {
          // Asignacion de Asiento
          encontra2 = asignarAsiento(opcionZona, opcionColumna);
 
+         if(encontra2==true){
+            ubicacion.set(ubicacion.size()-1, opcionZona + opcionColumna);
+            }
+         
      }while(encontra2 == false);
   
       teclado2.reset();
@@ -626,8 +619,11 @@ public class TeatroMoro5 {
         System.out.println(         "[0] Disponible       -> "+resto);
         System.out.println(rojo+    "[1] No disponible    -> "+totalVendidas+reset);
         System.out.println();
-         
-         
+          
+        // Si se venden todas las entradas, imprime un mensaje de Sold Out
+        if(resto==0){
+            System.out.println(rojo+"### SOLD OUT ###"+reset);
+        }
      }
     
     
@@ -647,7 +643,7 @@ class Entrada {
         boolean hayEntrada = false;
         
         if(entradaA != 0){
-            System.out.println(TeatroMoro5.rojo+"[A]:       " + TeatroMoro5.reset + entradaA);
+            System.out.println(TeatroMoro5.rojo+"[A]:      " + TeatroMoro5.reset + entradaA);
             hayEntrada = true;
         } 
         
@@ -662,7 +658,7 @@ class Entrada {
         }
         
         if (entradaD != 0){
-            System.out.println(TeatroMoro5.rojo+"[D]:      " + TeatroMoro5.reset + entradaC);
+            System.out.println(TeatroMoro5.rojo+"[D]:      " + TeatroMoro5.reset + entradaD);
             hayEntrada = true;
         }
         
@@ -673,7 +669,7 @@ class Entrada {
         cantidadEntradasVendidas = entradaA + entradaB + entradaC + entradaD;
         
         if(cantidadEntradasVendidas>0){
-            System.out.println(TeatroMoro5.azul+"[TOTAL]:   " + cantidadEntradasVendidas +TeatroMoro5.reset);
+            System.out.println(TeatroMoro5.azul+"[TOTAL]:  " + cantidadEntradasVendidas +TeatroMoro5.reset);
         }
         
     } // Fin metodo entradasVendidas()
