@@ -211,7 +211,8 @@ public class TeatroMoro5 {
         System.out.print("Ingrese ID venta: ");
         buscar = datos.nextLine();
      
-        for(int i=0; i<IDcliente.size(); i++){
+        int size = IDcliente.size();
+        for(int i=0; i< size; i++){
            if(IDcliente.get(i).equals(buscar)){
                IDcliente.remove(contador);
                 eliminarAsiento(contador);
@@ -434,7 +435,7 @@ public class TeatroMoro5 {
         String asiento = ubicacion.get(indice);
         String fila = asiento.substring(0,1);
         String columna = asiento.substring(1,2);
-        
+        // cambio de tipo String a int
         int col = Integer.parseInt(columna);
          
         switch(fila){
@@ -589,13 +590,13 @@ public class TeatroMoro5 {
         double costo = 0.0;
         // Si la lista no esta vacia, usa un FOR para sumar el ingreso total
         if(!ubicacion.isEmpty()){
-        for(int i=0; i < ubicacion.size(); i++){
-            costo += costoFinal.get(i);
-        }
+            int size = ubicacion.size();
+            for(int i=0; i < size; i++){
+                costo += costoFinal.get(i);
+            }
         System.out.println(rojo + ">> Ingresos Totales acumulados: " + azul + costo + reset);
         }
     }
-    
     
     
     public static void planoTeatro(){
