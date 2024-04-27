@@ -1,8 +1,11 @@
 
 package teatromoro5;
 
-import java.util.*;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.InputMismatchException;
 
 
 public class TeatroMoro5 {
@@ -18,8 +21,6 @@ public class TeatroMoro5 {
     public static String nombreTeatro = "TEATRO MORO";  
     public static String ID="";
     
-    public static double totalIngresos = 0;
-    public static boolean unAdulto = false;
     public static int totalVendidas = 0;
     
     public static boolean llenoZonaA = false;
@@ -29,12 +30,10 @@ public class TeatroMoro5 {
     
     // Abstraccion de representacion de datos
      // Declaro una matriz unidimensional para las zonas de entradas
-     public static String[] tipoEntrada = {"A", "B", "C", "D"};
+    public static String[] tipoEntrada = {"A", "B", "C", "D"};
      // Declaro matriz unidimensional para cuantificar entradas por sector
-     public static int[] contadorEntrada = {0,0,0,0};
-     
+    public static int[] contadorEntrada = {0,0,0,0};
  
-    public static String[] entradasCompradas = {"","","","","","","","","","","","","","",""};
     public static int indicadorEnt = 0; 
      // declaro matriz 4x5
     // el numero de asientos es fijo, por lo que un Array es la mejor opcion para representarlos
@@ -101,7 +100,7 @@ public class TeatroMoro5 {
             case 7 -> modificarEntrada();
             case 8 -> {
                 encontrado = true; // para salir del bucle while
-                System.out.println(celeste+"Gracias por su compra!"+reset);
+                System.out.println(celeste+"\n------Gracias por su compra!------"+reset);
                 System.out.println("");
                 }
             // control de errores
@@ -402,7 +401,6 @@ public class TeatroMoro5 {
                     ){
                 ubicacionAsiento[i][columna-1] = 1;
                 contadorEntrada[i]++;
-                entradasCompradas[indicadorEnt]= fila + columna;
                 indicadorEnt++;
                 System.out.println("Su ubicacion escogida: " + rojo + fila + columna + reset);
                 
@@ -594,10 +592,18 @@ public class TeatroMoro5 {
             for(int i=0; i < size; i++){
                 costo += costoFinal.get(i);
             }
+            
+
+            
         System.out.println(rojo + ">> Ingresos Totales acumulados: " + azul + costo + reset);
+        
+        if(totalVendidas >= 5){
+            costo = costo - (costo * 0.1);
+            System.out.println(rojo+">>> Total con descuento: " + costo + reset);
         }
-    }
-    
+        
+        } // fin if
+    } // fin metodo ingresosTotales() 
     
     public static void planoTeatro(){
          
